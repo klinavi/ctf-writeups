@@ -17,7 +17,7 @@
 ---
 ### Hosts discovery (descubrimiento de hosts)
 
-![](imgs/Pasted image 20260120191801.png)
+![](imgs/Pasted%image$20260120191801.png)
 ---
 ### Enumeración
 ```bash
