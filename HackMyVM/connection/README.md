@@ -2,9 +2,9 @@
 - **Objetivo:** Conseguir acceso
 - **IP:** 192.168.0.158
 - **Hostname:** connection
-- **Sistema Operativo:** Linux
+- **Sistema Operativo:**
 - **Arquitectura:**
-- **Kernel:**
+- **Kernel:** Linux
 - **TTL:** 64
 - **Servicios expuestos:**
 - **Tecnologías detectadas:** 
