@@ -48,8 +48,8 @@ Service detection performed. Please report any incorrect results at https://nmap
  #### http 
  En esta maquina por el momento solo hay un puerto habierto, osea solo un vector de ataque que es http. 
  Al entrar a la pagina encontramos solo una imagen, sin nada en el codigo fuente de la pagina, asi que ahora hare las siguientes cosa:
- 1 - Descargas la imagen y analizarla para buscar mensajes dentro de ella
- 2 - hacer fuzzing en busca de directorios
+ - Descargas la imagen y analizarla para buscar mensajes dentro de ella
+ - Hacer fuzzing en busca de directorios
 
  ![](imgs/20260306232811.png)
 
