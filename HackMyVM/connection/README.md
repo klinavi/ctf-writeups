@@ -17,7 +17,7 @@
 ---
 ### Hosts discovery (descubrimiento de hosts)
 
-![](imgs/1)
+![](imgs/1.png)
 
 ---
 ### Enumeración
@@ -102,30 +102,30 @@ Service detection performed. Please report any incorrect results at https://nmap
 
 Primero busque en la pagina web, superficialmete, pero al no encontrar nada enumere archivos, pero parece que no van por ahi los tiros:
 
-![](imgs/2)
+![](imgs/2.png)
 
 Ahora toca enumerar samba 
 
 ### Samba
-![](imgs/3)
+![](imgs/3.png)
 
 Como se vio en el escaneo, hay acceso anonimo 
 
 Tenemos una carpeta share, parece ser un directorio, podrias este ser el directorio de /var/www/html?
 
-![](imgs/4)
+![](imgs/4.png)
 
 Solo un index.html, la probabilidad de que sea /var/www/html aumentan
 
-![](imgs/5)
+![](imgs/5.png)
 
 ---
 ### Explotación
 Teniendo en cuenta que es muy posible que el directorio de smb sea /var/www/html hice una prueba directamente con una php-reverse-shell
 
-![](imgs/6)
+![](imgs/6.png)
 
-![](imgs/7)
+![](imgs/7.png)
 
 Funciono!
 
@@ -136,8 +136,8 @@ Funciono!
 ### Escalada de privilegios
 Primero busque binarios con SUID de root
 
-![](imgs/8)
+![](imgs/8.png)
 
 Consulte y resulta que gdb permite escalar privilegios
 
-![](imgs/9)
+![](imgs/9.png)
