@@ -148,7 +148,7 @@ Ya con esto procedo a hacer Portforwarding y descubir una cadena de brainfuck
 
 ![](imgs/20260307220841.png)
 
-esto es lo que dice: ==all HackMyVM hackers!!== 
+esto es lo que dice: all HackMyVM hackers!!
 
 Esto hay en el codigo fuente 
 
@@ -167,7 +167,7 @@ El script:
 
 ![](imgs/20260308185539.png)
 
-Ahora tenemos una RCE como el usaurio ==drito==, con esto puedo proceder a obtener un terminal 
+Ahora tenemos una RCE como el usaurio drito, con esto puedo proceder a obtener un terminal 
 
 ![](imgs/20260308185933.png)
 
