@@ -1,24 +1,19 @@
 ### Información General
-- **Objetivo:** Acceder a la maquina
-- **IP:** 192.168.0.144
-- **Hostname:** arroutada
-- **Sistema Operativo:**
-- **Arquitectura:**
-- **Kernel:**
-- **TTL:**  64 (linux)
-- **Servicios expuestos:**
-- **Tecnologías detectadas:** 
+- **IP:** `192.168.0.144`
+- **Hostname:** `arroutada`
 
 ---
-### Notas
--
----
+
 ## Writeup
+
 ---
-### Hosts discovery (descubrimiento de hosts)
+
+### Hosts Discovery (Descubrimiento de hosts)
 
 ![](imgs/20260306232319.png)
+
 ---
+
 ### Enumeración
 
 ```bash
@@ -31,52 +26,57 @@ PORT   STATE SERVICE REASON         VERSION
 80/tcp open  http    syn-ack ttl 64 Apache httpd 2.4.54 ((Debian))
 |_http-server-header: Apache/2.4.54 (Debian)
 |_http-title: Site doesn't have a title (text/html).
-| http-methods: 
+| http-methods:
 |_  Supported Methods: OPTIONS HEAD GET POST
 MAC Address: 08:00:27:58:13:94 (PCS Systemtechnik/Oracle VirtualBox virtual NIC)
 
 Read data files from: /usr/share/nmap
 Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
 # Nmap done at Fri Mar  6 23:25:11 2026 -- 1 IP address (1 host up) scanned in 6.80 seconds
-
 ```
 
-| Vector | Servicio (Puerto) | Estado  | Qué permite                           | Qué intentar | Notas |
-| ------ | ----------------- | ------- | ------------------------------------- | ------------ | ----- |
-| 1      | http (80)         | abierto | gran abanico de vulnerabiliadades web |              |       |
+| Vector | Servicio (Puerto) | Estado  | Qué permite                          | Qué intentar | Notas |
+| ------ | ----------------- | ------- | ------------------------------------ | ------------ | ----- |
+| 1      | `http` (80)       | Abierto | Gran abanico de vulnerabilidades web |              |       |
 
- #### http 
- En esta maquina por el momento solo hay un puerto habierto, osea solo un vector de ataque que es http. 
- Al entrar a la pagina encontramos solo una imagen, sin nada en el codigo fuente de la pagina, asi que ahora hare las siguientes cosa:
- - Descargas la imagen y analizarla para buscar mensajes dentro de ella
- - Hacer fuzzing en busca de directorios
+#### HTTP
 
- ![](imgs/20260306232811.png)
+En esta máquina por el momento solo hay un puerto abierto, es decir, un único vector de ataque: **HTTP**.
 
-Esto es lo que veo al analizar la imagen, un directorio
+Al entrar a la página encontramos solo una imagen, sin nada relevante en el código fuente, así que procedemos con las siguientes acciones:
+
+- Descargar la imagen y analizarla en busca de datos ocultos (**esteganografía**)
+- Hacer **fuzzing** en busca de directorios
+
+![](imgs/20260306232811.png)
+
+Al analizar la imagen encontramos un directorio:
 
 ![](imgs/20260306233229.png)
 
-A la par que la enumeración de directorios tambien arroja el mismo directorio
+A la par, la enumeración de directorios arroja el mismo resultado:
 
 ![](imgs/20260306233349.png)
 
-ahora tenemos una pista, tenemos un path de destino pero hay uno intermediario desconocido
+Ahora tenemos una pista: un **path** de destino, pero con un segmento intermedio desconocido:
 
 ![](imgs/20260306233416.png)
 
-usando ffuf, pude descubir el directorios
-```bash 
-# Comando de ffuf
-ffuf -u "http://192.168.0.144/scout/FUZZ/docs/" -w /usr/share/wordlists/seclists/Discovery/Web-Content/DirBuster-2007_directory-list-lowercase-2.3-big.txt -c
+Usando **`ffuf`**, se logra descubrir el directorio faltante:
 
-# directorio que descubrio 
-j2                      [Status: 200, Size: 189767, Words: 15060, Lines: 1017, Duration: 403ms]
+```bash
+# Comando ffuf
+ffuf -u "http://192.168.0.144/scout/FUZZ/docs/" \
+     -w /usr/share/wordlists/seclists/Discovery/Web-Content/DirBuster-2007_directory-list-lowercase-2.3-big.txt \
+     -c
+
+# Directorio descubierto
+j2    [Status: 200, Size: 189767, Words: 15060, Lines: 1017, Duration: 403ms]
 ```
 
 ![](imgs/20260306234117.png)
 
-Esto es lo que encontre en el directorio 
+Contenido encontrado en el directorio:
 
 ![](imgs/20260306234148.png)
 
@@ -86,94 +86,101 @@ Esto es lo que encontre en el directorio
 
 ![](imgs/20260307000638.png)
 
-Ninguna de las cosas que encontre sirve como password y procediendo a usar office2john me salio este error
+Ninguno de los elementos encontrados funciona como contraseña. Al intentar usar **`office2john`** se obtuvo el siguiente error:
 
 ![](imgs/20260307000723.png)
 
-Y procedi a verificar con binwalk
+Se procedió a verificar el archivo con **`binwalk`**:
 
 ![](imgs/20260307000821.png)
 
-Ya sabiendo que el archivo es un .zip lo extraje pero no obtuve nada, asi que segui con el plan de extraer el hash y crackear la contraseña
+> **Nota:** `binwalk` revela que el archivo es en realidad un **`.zip`**. Al extraerlo no se obtiene nada útil directamente, así que continuamos con la extracción del hash para crackearlo.
 
-Extraigo el hash
+Extracción del hash:
 
-![](imgs/20260307002743.png) 
+![](imgs/20260307002743.png)
 
-Aqui esta la contraseña crackeada
+Contraseña crackeada exitosamente:
 
 ![](imgs/20260307003103.png)
 
-Y con la contraseña accedo al archivo y veo esto
+Con la contraseña se accede al archivo y se obtiene la siguiente información:
 
 ![](imgs/20260307003202.png)
 
-Hice fuzzing a thejabasshel.php buscando parametro y encontre el parametro a, pero arrojaba esto
+Se realiza **fuzzing** sobre `thejabasshel.php` en busca de parámetros. Se encontró el parámetro `a`, pero su respuesta era la siguiente:
 
 ![](imgs/20260307013845.png)
 
-y luego de probar algunas cosas rapidas en el parametro b hice fuzzing encontrando lo siguiente
+Luego de probar algunas cosas rápidas con el parámetro `b`, el fuzzing revela lo siguiente:
 
 ![](imgs/20260307013723.png)
 
-Por mi confusion pense en lo del pass.txt pensando que era algun tipo de login pero viendo documentación vi que el parametro *a* era el comando y el *b* la contraseña
+> Inicialmente se confundió `pass.txt` con algún tipo de mecanismo de login, pero revisando la documentación se confirmó que el parámetro **`a`** corresponde al **comando** y el parámetro **`b`** a la **contraseña**.
 
-Consiguiendo asi una RCE 
+Esto nos otorga una **RCE (Remote Code Execution)**:
 
 ![](imgs/20260307014104.png)
 
 ---
+
 ### Explotación
-Ya teniendo una RCE me envie una shell hacia mi maquina para navegar con mas comodidad
+
+Con la **RCE** confirmada, se envía una **reverse shell** hacia la máquina atacante para operar con mayor comodidad:
 
 ![](imgs/20260307014810.png)
 
 ---
-### Post Explotación
-Despues de buscar encontramos el siguiente servicio
+
+### Post-Explotación
+
+Después de enumerar el sistema, se encuentra el siguiente servicio:
 
 ![](imgs/20260307220338.png)
 
-El problema es que solo esta de forma local en la maquian asi que haremos Portforwarding, para eso usaremos chisel
+> **Problema:** El servicio solo está disponible de forma local en la máquina víctima, por lo que se requiere hacer **Port Forwarding**. Para esto se utilizará **`chisel`**.
 
-Primero hay que saber que arquitectura usa el sistema victima para descargar la version correcta de chisel
+Primero se identifica la arquitectura del sistema víctima para descargar la versión correcta de `chisel`:
 
 ![](imgs/20260307220703.png)
 
-En este caso es amd64 asi que descargamos la version correspondiente
+La arquitectura es **`amd64`**, así que se descarga la versión correspondiente:
 
 ![](imgs/20260307220801.png)
 
-Ya con esto procedo a hacer Portforwarding y descubir una cadena de brainfuck
+Con el **Port Forwarding** establecido, se descubre una cadena en **Brainfuck**:
 
 ![](imgs/20260307220841.png)
 
-esto es lo que dice: all HackMyVM hackers!!
+> **Mensaje decodificado:** `all HackMyVM hackers!!`
 
-Esto hay en el codigo fuente 
+Código fuente del servicio:
 
 ![](imgs/20260307221559.png)
 
-Luego de revisar el archivo me doy cuenta que devuelve  un script en php y luego de perdirle a chatgpt que me explicara esto me dijo que habia una RCE haciendo un peticion por POST diciendo que es json
+Al revisar el archivo se identifica que devuelve un script en **PHP**. Analizando su lógica, se determina que:
+
+1. Lee el **JSON del cuerpo del request** (`request body`).
+2. Lo convierte a un array en **PHP**.
+3. Verifica si existe la clave **`command`**.
+4. Si existe → ejecuta el comando mediante `system()`.
+5. Si no existe → muestra un error.
+
+Esto expone otra **RCE** mediante una petición `POST` con cuerpo en formato **JSON**:
 
 ![](imgs/20260308185137.png)
 
-El script:
-1. Lee el **JSON del request body**.
-2. Lo convierte a **array PHP**
-3. Verifica si existe **`command`**.
-4. Si existe → ejecuta el comando con `system()`.
-5. Si no → muestra el error que viste.
-
 ![](imgs/20260308185539.png)
 
-Ahora tenemos una RCE como el usaurio drito, con esto puedo proceder a obtener un terminal 
+Se obtiene una **RCE** como el usuario `drito`. Con esto se puede establecer una nueva shell interactiva:
 
 ![](imgs/20260308185933.png)
 
 ---
-### Escalada de privilegios
-La escalada es bastante facil ya que tenemos permitido ejecutar xargs como sudo sin contraseña
+
+### Escalada de Privilegios
+
+La escalada es bastante directa: el usuario tiene permitido ejecutar **`xargs`** como `root` sin contraseña mediante `sudo`:
 
 ![](imgs/20260308191602.png)
 
