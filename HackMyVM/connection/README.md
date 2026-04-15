@@ -1,26 +1,21 @@
 ### Información General
-- **Objetivo:** Conseguir acceso
-- **IP:** 192.168.0.158
-- **Hostname:** connection
-- **Sistema Operativo:**
-- **Arquitectura:**
-- **Kernel:** Linux
-- **TTL:** 64
-- **Servicios expuestos:**
-- **Tecnologías detectadas:** 
+- **IP:** `192.168.0.158`
+- **Hostname:** `connection`
 
 ---
-### Notas
--
----
+
 ## Writeup
+
 ---
-### Hosts discovery (descubrimiento de hosts)
+
+### Hosts Discovery (Descubrimiento de hosts)
 
 ![](imgs/1.png)
 
 ---
+
 ### Enumeración
+
 ```bash
 # Nmap 7.95 scan initiated Tue Jan 20 19:19:08 2026 as: /usr/lib/nmap/nmap -p 22,80,139,445 -sCV -sS -Pn -vvv -oN nmap.txt -oX nmap.xml 192.168.0.159
 Nmap scan report for connection (192.168.0.159)
@@ -29,7 +24,7 @@ Scanned at 2026-01-20 19:19:08 -03 for 12s
 
 PORT    STATE SERVICE     REASON         VERSION
 22/tcp  open  ssh         syn-ack ttl 64 OpenSSH 7.9p1 Debian 10+deb10u2 (protocol 2.0)
-| ssh-hostkey: 
+| ssh-hostkey:
 |   2048 b7:e6:01:b5:f9:06:a1:ea:40:04:29:44:f4:df:22:a1 (RSA)
 | ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCxNh+4rTxFF/c8dZwGAg+SIl5zJE1Rq8y3vlHZ2P7gTdRQDb7XlWK8W5O0XVtBVqWlvLZlHIOniUJlSlcps51cHo58B9KczrZME5phRmiYLOo2pTBmra6sZADq7mmlHkpz1LbpmgzSGchrrp9pSxUjcdmpffhgd79i/q0d4ya7vK4R/tcegMNUxjkmW83JCu0Mc2qw3JvzqCQ5BGyrgGrsb4VguV/MZrPzX8nwM7i2ivsg+d171360aa9SXtoGELkBfeqCOKRCOckw2gfQlo2tsdc26jwimBygMPpkAH87zMJdl5iEX7p9tPr4ddIp9DtPjsSB3Cu2ObOr9iAYVvy5
 |   256 fb:16:94:df:93:89:c7:56:85:84:22:9e:a0:be:7c:95 (ECDSA)
@@ -38,7 +33,7 @@ PORT    STATE SERVICE     REASON         VERSION
 |_ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIM9EVXAcxAJmQLNl3ttKL8QEWy+X+0R/rmS0tyt/bd2t
 80/tcp  open  http        syn-ack ttl 64 Apache httpd 2.4.38 ((Debian))
 |_http-title: Apache2 Debian Default Page: It works
-| http-methods: 
+| http-methods:
 |_  Supported Methods: GET POST OPTIONS HEAD
 |_http-server-header: Apache/2.4.38 (Debian)
 139/tcp open  netbios-ssn syn-ack ttl 64 Samba smbd 3.X - 4.X (workgroup: WORKGROUP)
@@ -47,25 +42,25 @@ MAC Address: 08:00:27:07:F7:DA (PCS Systemtechnik/Oracle VirtualBox virtual NIC)
 Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
 
 Host script results:
-| smb-os-discovery: 
+| smb-os-discovery:
 |   OS: Windows 6.1 (Samba 4.9.5-Debian)
 |   Computer name: connection
 |   NetBIOS computer name: CONNECTION\x00
 |   Domain name: \x00
 |   FQDN: connection
 |_  System time: 2026-01-20T17:19:19-05:00
-| smb2-security-mode: 
-|   3:1:1: 
+| smb2-security-mode:
+|   3:1:1:
 |_    Message signing enabled but not required
-| smb-security-mode: 
+| smb-security-mode:
 |   account_used: guest
 |   authentication_level: user
 |   challenge_response: supported
 |_  message_signing: disabled (dangerous, but default)
-| smb2-time: 
+| smb2-time:
 |   date: 2026-01-20T22:19:19
 |_  start_date: N/A
-| p2p-conficker: 
+| p2p-conficker:
 |   Checking for Conficker.C or higher...
 |   Check 1 (port 29583/tcp): CLEAN (Couldn't connect)
 |   Check 2 (port 15794/tcp): CLEAN (Couldn't connect)
@@ -85,59 +80,64 @@ Host script results:
 | Statistics:
 |   00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00
 |   00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00
-|_  00:00:00:00:00:00:00:00:00:00:00:00:00:00
+|_  00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00
 
 Read data files from: /usr/share/nmap
 Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
 # Nmap done at Tue Jan 20 19:19:20 2026 -- 1 IP address (1 host up) scanned in 11.92 seconds
-
 ```
 
-| Vector | Servicio (Puerto) | Estado  | Qué permite                         | Qué intentar                                  | Notas |
-| ------ | ----------------- | ------- | ----------------------------------- | --------------------------------------------- | ----- |
-| 1      | ssh (22)          | abierto | Acceso autentificado al sistema     | Buscar usuarios                               |       |
-| 2      | HTTP (80)         | abierto | Toda clase de vulenrabiliadades web | Enumeración de dirtorios, etc                 |       |
-| 3      | netbios-ssn (139) | abierto | Compartir recursos                  | Enumerar recursos, directorios, uduarios, etc |       |
-| 4      | netbios-ssn (443) | abierto | Compartir recursos                  | Enumerar recursos, directorios, uduarios, etc |       |
+| Vector | Servicio (Puerto)    | Estado  | Qué permite                          | Qué intentar                                   | Notas |
+| ------ | -------------------- | ------- | ------------------------------------ | ---------------------------------------------- | ----- |
+| 1      | `ssh` (22)           | Abierto | Acceso autenticado al sistema        | Buscar usuarios                                |       |
+| 2      | `http` (80)          | Abierto | Toda clase de vulnerabilidades web   | Enumeración de directorios, etc.               |       |
+| 3      | `netbios-ssn` (139)  | Abierto | Compartir recursos                   | Enumerar recursos, directorios, usuarios, etc. |       |
+| 4      | `netbios-ssn` (445)  | Abierto | Compartir recursos                   | Enumerar recursos, directorios, usuarios, etc. |       |
 
-Primero busque en la pagina web, superficialmete, pero al no encontrar nada enumere archivos, pero parece que no van por ahi los tiros:
+Primero se revisó la página web superficialmente, pero al no encontrar nada relevante se enumeraron archivos — sin resultado tampoco:
 
 ![](imgs/2.png)
 
-Ahora toca enumerar samba 
+A continuación, se procede a enumerar **Samba**.
 
-### Samba
+#### Samba
+
 ![](imgs/3.png)
 
-Como se vio en el escaneo, hay acceso anonimo 
+Como se observó en el escaneo de **`nmap`**, hay **acceso anónimo** habilitado.
 
-Tenemos una carpeta share, parece ser un directorio, podrias este ser el directorio de /var/www/html?
+Existe un recurso compartido llamado `share` que aparenta ser un directorio. ¿Podría corresponder a `/var/www/html`?
 
 ![](imgs/4.png)
 
-Solo un index.html, la probabilidad de que sea /var/www/html aumentan
+Solo contiene un `index.html`, lo que aumenta la probabilidad de que efectivamente sea `/var/www/html`:
 
 ![](imgs/5.png)
 
 ---
+
 ### Explotación
-Teniendo en cuenta que es muy posible que el directorio de smb sea /var/www/html hice una prueba directamente con una php-reverse-shell
+
+Teniendo en cuenta que es muy probable que el directorio compartido por **SMB** corresponda a `/var/www/html`, se sube directamente una **`php-reverse-shell`** a través del recurso compartido:
 
 ![](imgs/6.png)
 
 ![](imgs/7.png)
 
-Funciono!
+> **Funciona.** La shell se ejecuta correctamente al acceder al archivo vía HTTP.
 
 ---
-### Post Explotación
+
+### Post-Explotación
 
 ---
-### Escalada de privilegios
-Primero busque binarios con SUID de root
+
+### Escalada de Privilegios
+
+Se buscan binarios con el bit **SUID** asignado al usuario `root`:
 
 ![](imgs/8.png)
 
-Consulte y resulta que gdb permite escalar privilegios
+Se identifica que **`gdb`** tiene el bit SUID activo y permite escalar privilegios:
 
 ![](imgs/9.png)
