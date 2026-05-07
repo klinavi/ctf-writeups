@@ -47,14 +47,15 @@ Service detection performed. Please report any incorrect results at https://nmap
 
 ![](imagenes/2.png)
 
-Apollo Server es un intermediario entre su esquema GraphQL y las fuentes de datos (como bases de datos o API REST). Ofrece una configuración sencilla, lo que facilita la conexión de API, la definición del esquema y la escritura de funciones de resolución.
+Al momento de dirigirme hacia `http://192.168.0.165:8888` podemos identificar que esta corriendo un servicio *Apollo server*.
+Apollo Server es un intermediario entre un esquema GraphQL y las fuentes de datos (como bases de datos o API REST). Ofrece una configuración sencilla, lo que facilita la conexión de API, la definición del esquema y la escritura de funciones de resolución.
 
 ---
 
 ### Explotación
 
 Básicamente por detrás está corriendo GraphQL, lo que podemos hacer aquí es extraer toda la información con la ayuda de una query de introspección.
-Para eso usé la que hay en [Hacktricks](https://hacktricks.wiki/en/network-services-pentesting/pentesting-web/graphql.html) en el apartado de "Enumerate Database Schema via Introspection" dentro de GraphQL, pero había que adaptar la query para este formato:
+Para eso usé la query que se encuentra en [Hacktricks](https://hacktricks.wiki/en/network-services-pentesting/pentesting-web/graphql.html) en el apartado de "Enumerate Database Schema via Introspection" dentro de la sección GraphQL, pero había que adaptar la query para este formato:
 
 ```bash
 curl --request POST \
@@ -63,7 +64,7 @@ curl --request POST \
   --data '{"query":"query { __typename }"}'
 ```
 
-Así que le pedí a ChatGPT que me lo adaptara, dándome esto:
+Así que le pedí a ChatGPT que lo adaptara, dándome esto:
 
 ```bash
 curl --request POST \
@@ -72,7 +73,7 @@ curl --request POST \
 --data '{"query":"query IntrospectionQuery { __schema { queryType { name } mutationType { name } subscriptionType { name } types { ...FullType } directives { name description args { ...InputValue } } } } fragment FullType on __Type { kind name description fields(includeDeprecated: true) { name description args { ...InputValue } type { ...TypeRef } isDeprecated deprecationReason } inputFields { ...InputValue } interfaces { ...TypeRef } enumValues(includeDeprecated: true) { name description isDeprecated deprecationReason } possibleTypes { ...TypeRef } } fragment InputValue on __InputValue { name description type { ...TypeRef } defaultValue } fragment TypeRef on __Type { kind name ofType { kind name ofType { kind name ofType { kind name } } } }"}' | jq > schema.json
 ```
 
-Al final añadí un `| jq > schema.json` para luego pasarlo a `GraphQL Voyager`, pero no me funcionó, así que se lo pasé a `Claude` para que lo analizara y buscara cosas interesantes, reportándome lo siguiente:
+Al final añadí un `| jq > schema.json` para luego pasarlo a `GraphQL Voyager`, pero no me funcionó, así que le pasé la salida a `Claude` para que lo analizara y buscara cosas interesantes, reportándome lo siguiente:
 
 ![](imagenes/3.png)
 
@@ -186,3 +187,5 @@ pty.spawn("/bin/sh")
 Ya solo queda ejecutar el script a través del daemon y estar en modo escucha para recibir la shell:
 
 ![](imagenes/9.png)
+
+Finalmente pude conseguir ejecución de comando como root, maquina Pwned.
