@@ -72,11 +72,11 @@ Por lo que uso `ffuf` para descubrir archivos disponibles usando el siguiente co
 ❯ ffuf -s -u "http://192.168.0.170/magic.php" -X POST -d '<?xml version="1.0" encoding="UTF-8"?> <!DOCTYPE foo [<!ENTITY xxe SYSTEM "FUZZ">] > <details><email>&xxe;</email><password>admin</password></details>' -w /usr/share/seclists/Fuzzing/LFI/LFI-etc-files-of-all-linux-packages.txt -fs 85 
 ```
 Este comando hace lo siguiente:
-- ffuf -s: Arranca la herramienta en modo silencioso para solo ver el nombre de la ruta.
-- -u ... -X POST: Define la URL objetivo y especifica que se enviarán los datos mediante un método POST.
-- -d '...': Es el cuerpo de la petición en formato XML. Reemplaza la palabra FUZZ por las líneas del diccionario para intentar leer archivos internos del sistema (ataque XXE).
-- -w ...: Indica la ruta del diccionario con la lista de archivos de Linux que va a probar.
-- -fs 85: Oculta todas las respuestas que midan exactamente 85 bytes.
+- `ffuf -s`: Arranca la herramienta en modo silencioso para solo ver el nombre de la ruta.
+- `-u ... -X POST`: Define la URL objetivo y especifica que se enviarán los datos mediante un método POST.
+- `-d '...'`: Es el cuerpo de la petición en formato XML. Reemplaza la palabra FUZZ por las líneas del diccionario para intentar leer archivos internos del sistema (ataque XXE).
+- `-w ...`: Indica la ruta del diccionario con la lista de archivos de Linux que va a probar.
+- `-fs 85`: Oculta todas las respuestas que midan exactamente 85 bytes.
 
 Luego de enumerar por un tiempo me centré en enumerar archivos dentro del directorio de usuario `david`, identificado al leer el `/etc/passwd`. De esta forma fue como descubrí un archivo `.viminfo`:
 
